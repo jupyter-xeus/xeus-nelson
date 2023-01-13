@@ -1,0 +1,45 @@
+############################################################################
+# Copyright (c) 2023, Hind Montassif          
+#                                                     
+#                                                                          
+# Distributed under the terms of the BSD 3-Clause License.               
+#                                                                          
+# The full license is in the file LICENSE, distributed with this software. 
+############################################################################
+
+# xeus-nelson cmake module
+# This module sets the following variables in your project::
+#
+#   xeus-nelson_FOUND - true if xeus-nelson was found on the system
+#   xeus-nelson_INCLUDE_DIRS - the directory containing xeus-nelson headers
+#   xeus-nelson_LIBRARY - the library for dynamic linking
+#   xeus-nelson_STATIC_LIBRARY - the library for static linking
+
+@PACKAGE_INIT@
+
+set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR};${CMAKE_MODULE_PATH}")
+
+@XEUS_NELSON_CONFIG_CODE@
+
+include(CMakeFindDependencyMacro)
+find_dependency(xtl @xtl_REQUIRED_VERSION@)
+find_dependency(xeus-zmq @xeus-zmq_REQUIRED_VERSION@)
+find_dependency(cppzmq @cppzmq_REQUIRED_VERSION@)
+
+
+if (NOT TARGET xeus-nelson AND NOT TARGET xeus-nelson-static)
+    include("${CMAKE_CURRENT_LIST_DIR}/@PROJECT_NAME@Targets.cmake")
+
+    if (TARGET xeus-nelson AND TARGET xeus-nelson-static)
+        get_target_property(@PROJECT_NAME@_INCLUDE_DIR xeus-nelson INTERFACE_INCLUDE_DIRECTORIES)
+        get_target_property(@PROJECT_NAME@_LIBRARY xeus-nelson LOCATION)
+        get_target_property(@PROJECT_NAME@_STATIC_LIBRARY xeus-nelson-static LOCATION)
+    elseif (TARGET xeus-nelson)
+        get_target_property(@PROJECT_NAME@_INCLUDE_DIR xeus-nelson INTERFACE_INCLUDE_DIRECTORIES)
+        get_target_property(@PROJECT_NAME@_LIBRARY xeus-nelson LOCATION)
+    elseif (TARGET xeus-nelson-static)
+        get_target_property(@PROJECT_NAME@_INCLUDE_DIR xeus-nelson-static INTERFACE_INCLUDE_DIRECTORIES)
+        get_target_property(@PROJECT_NAME@_STATIC_LIBRARY xeus-nelson-static LOCATION)
+        set(@PROJECT_NAME@_LIBRARY ${@PROJECT_NAME@_STATIC_LIBRARY})
+    endif ()
+endif ()

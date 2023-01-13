@@ -1,0 +1,11 @@
+{
+  "display_name": "nelson 1.0.0 (xnelson)",
+  "argv": [
+      "@XEUS_NELSON_KERNELSPEC_PATH@xnelson",
+      "-f",
+      "{connection_file}"
+  ],
+  "language": "nelson",
+  "metadata": {"debugger": false
+  }
+}

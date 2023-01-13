@@ -1,8 +1,5 @@
 # ![xeus-nelson](docs/source/xeus-logo.svg)
 
-main
-
-
 [![Build Status](https://github.com/Hind-M/xeus-nelson/actions/workflows/main.yml/badge.svg)](https://github.com/Hind-M/xeus-nelson/actions/workflows/main.yml)
 
 [![Documentation Status](http://readthedocs.org/projects/xeus-python/badge/?version=latest)](https://xeus-nelsonreadthedocs.io/en/latest/?badge=latest)

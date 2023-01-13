@@ -37,8 +37,14 @@ namespace xeus_nelson
             Nelson::setPrintInterface(m_evaluator->getInterface());
             Nelson::BuiltInFunctionDefManager::getInstance()->add("addpath",
                                                                   (Nelson::ptrBuiltin)Nelson::FunctionsGateway::addpathBuiltin,
-                                                                  1, -1, L"", L"functions_manager",                                              (size_t)Nelson::CPP_BUILTIN_WITH_EVALUATOR, true);
+                                                                  1, -1, L"", L"functions_manager",
+                                                                  (size_t)Nelson::CPP_BUILTIN_WITH_EVALUATOR, true);
         }
+    }
+
+    interpreter::~interpreter()
+    {
+        Nelson::destroyMainEvaluator();
     }
 
     nl::json interpreter::execute_request_impl(int execution_counter, // Typically the cell number

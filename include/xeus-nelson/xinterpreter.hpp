@@ -42,7 +42,7 @@ namespace xeus_nelson
     public:
 
         interpreter();
-        virtual ~interpreter() = default;
+        virtual ~interpreter();
 
     protected:
 

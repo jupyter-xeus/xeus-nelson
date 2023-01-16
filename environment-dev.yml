@@ -11,8 +11,7 @@ dependencies:
   - nlohmann_json
   - cppzmq
   - xtl
-  # TODO add `nelson` when it's available on conda-forge
-  #- nelson
+  - nelson
   # Test dependencies
   - pytest
   - jupyter_kernel_test>=0.4.3

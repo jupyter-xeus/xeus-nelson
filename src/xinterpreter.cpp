@@ -1,9 +1,9 @@
 /***************************************************************************
-* Copyright (c) 2023, Hind Montassif                                  
-*                                                                          
-* Distributed under the terms of the BSD 3-Clause License.                 
-*                                                                          
-* The full license is in the file LICENSE, distributed with this software. 
+* Copyright (c) 2023, Hind Montassif
+*
+* Distributed under the terms of the BSD 3-Clause License.
+*
+* The full license is in the file LICENSE, distributed with this software.
 ****************************************************************************/
 
 #include <string>
@@ -17,12 +17,12 @@
 #include "xeus/xhelper.hpp"
 
 #include "xeus-nelson/xinterpreter.hpp"
+#include "xeus-nelson/xutils.hpp"
 
 namespace nl = nlohmann;
 
 namespace xeus_nelson
 {
- 
     interpreter::interpreter()
     {
         xeus::register_interpreter(this);
@@ -71,15 +71,17 @@ namespace xeus_nelson
             std::wstring output;
             const std::wstring& command = Nelson::utf8_to_wstring(code);
             Nelson::EvaluateConsoleCommandToString(m_evaluator, command, output);
-            if (!silent)
+            // Trim `output`
+            const std::string& trimmed_output = trim(Nelson::wstring_to_utf8(output));
+            if (!silent && !trimmed_output.empty())
             {
                 nl::json pub_data;
-                pub_data["text/plain"] = Nelson::wstring_to_utf8(output);
+                pub_data["text/plain"] = trimmed_output;
                 // Publish the execution result
                 publish_execution_result(execution_counter, std::move(pub_data), nl::json::object());
             }
 
-            // TODO to set correctly?
+            // TODO payload to set correctly or deprecated and not used anymore?
             //const nl::json& payload = nl::json::array();
             // Compose successful_reply message
             return xeus::create_successful_reply(nl::json::array(), nl::json::object());
@@ -109,26 +111,32 @@ namespace xeus_nelson
         return xeus::create_is_complete_reply("complete"/*status*/, "   "/*indent*/);
     }
 
-    nl::json interpreter::complete_request_impl(const std::string&  code,
-                                                     int cursor_pos)
+    nl::json interpreter::complete_request_impl(const std::string& code,
+                                                int cursor_pos)
     {
-        // Should be replaced with code performing the completion
-        // and use the returned `matches` to `create_complete_reply`
-        // i.e if the code starts with 'H', it could be the following completion
-       
-//         return xeus::create_complete_reply(
-//             {
-//                 std::string("Hello"), 
-//                 std::string("Hey"), 
-//                 std::string("Howdy")
-//             },          /*matches*/
-//             5,          /*cursor_start*/
-//             cursor_pos  /*cursor_end*/
-//         );
+        // Split the input to have only the word in the back of the cursor
+        std::string delims = " \t\n`!@#$^&*()=+[{]}\\|;:\'\",<>?.";
+        std::size_t _cursor_pos = cursor_pos;
+        auto text = split_line(code, delims, _cursor_pos);
+        std::string to_complete = text.back().c_str();
+
+        // Get all possible matches for completion
+        const std::wstring& prefix = Nelson::utf8_to_wstring(to_complete);
+        std::vector<std::wstring> var_vec = Nelson::VariableCompleter(prefix);
+        std::vector<std::wstring> macro_vec = Nelson::MacroCompleter(prefix);
+        std::vector<std::wstring> file_vec = Nelson::FileCompleter(prefix);
+        std::vector<std::wstring> builtin_vec = Nelson::BuiltinCompleter(prefix);
+
+        // Concatenate all the possible matches
+        std::vector<std::string> matches;
+        std::transform(var_vec.begin(), var_vec.end(), std::back_inserter(matches), [](auto const& ws) { return Nelson::wstring_to_utf8(ws); });
+        std::transform(macro_vec.begin(), macro_vec.end(), std::back_inserter(matches), [](auto const& ws) { return Nelson::wstring_to_utf8(ws); });
+        std::transform(file_vec.begin(), file_vec.end(), std::back_inserter(matches), [](auto const& ws) { return Nelson::wstring_to_utf8(ws); });
+        std::transform(builtin_vec.begin(), builtin_vec.end(), std::back_inserter(matches), [](auto const& ws) { return Nelson::wstring_to_utf8(ws); });
 
         return xeus::create_complete_reply(
-            nl::json::array(),  /*matches*/
-            cursor_pos,         /*cursor_start*/
+            matches,
+            cursor_pos-to_complete.length(),
             cursor_pos
         );
     }

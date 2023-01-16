@@ -33,6 +33,11 @@
 #include "addpathBuiltin.hpp"
 #include "Nelson_VERSION.h"
 
+#include "VariableCompleter.hpp"
+#include "MacroCompleter.hpp"
+#include "FileCompleter.hpp"
+#include "BuiltinCompleter.hpp"
+
 namespace nl = nlohmann;
 
 namespace xeus_nelson

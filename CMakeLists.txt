@@ -94,6 +94,7 @@ endif ()
 set(XEUS_NELSON_HEADERS
     include/xeus-nelson/xeus_nelson_config.hpp
     include/xeus-nelson/xinterpreter.hpp
+    include/xeus-nelson/xutils.hpp
 )
 
 set(XEUS_NELSON_SRC
@@ -200,7 +201,7 @@ macro(xeus_nelson_create_target target_name linkage output_name)
         set(XEUS_NELSON_XEUS_TARGET xeus-static)
     endif ()
 
-    target_link_libraries(${target_name} PUBLIC ${XEUS_NELSON_XEUS_TARGET} xtl nlsCore nlsEngine)
+    target_link_libraries(${target_name} PUBLIC ${XEUS_NELSON_XEUS_TARGET} xtl nlsCore nlsEngine nlsText_completion)
 
     if (WIN32 OR CYGWIN)
         #

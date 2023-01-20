@@ -105,10 +105,22 @@ namespace xeus_nelson
 
     nl::json interpreter::is_complete_request_impl(const std::string& code)
     {
-        // Insert code here to validate the ``code``
-        // and use `create_is_complete_reply` with the corresponding status
-        // "unknown", "incomplete", "invalid", "complete"
-        return xeus::create_is_complete_reply("complete"/*status*/, "   "/*indent*/);
+        Nelson::setLexBuffer(code);
+        try
+        {
+            if (Nelson::lexCheckForMoreInput(0))
+            {
+                return xeus::create_is_complete_reply("incomplete", "");
+            }
+        }
+        catch (Nelson::Exception& e)
+        {
+            // The returned status could be `invalid` or `unknown` in this case
+            // `invalid` was chosen so that the code would be still sent for execution,
+            // and the user would see the error immediately
+            return xeus::create_is_complete_reply("invalid", "");
+        }
+        return xeus::create_is_complete_reply("complete", "");
     }
 
     nl::json interpreter::complete_request_impl(const std::string& code,
@@ -187,7 +199,7 @@ namespace xeus_nelson
               "  /_/\\_\\___|\\__,_|___/\n"
               "\n"
               "  xeus-nelson: a Jupyter Kernel based on nelson\n"
-              "  Nelson";
+              "  Nelson ";
         banner.append(language_version);
 
         const bool         debugger = false;

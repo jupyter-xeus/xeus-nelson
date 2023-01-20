@@ -38,6 +38,8 @@
 #include "FileCompleter.hpp"
 #include "BuiltinCompleter.hpp"
 
+#include "LexerInterface.hpp"
+
 namespace nl = nlohmann;
 
 namespace xeus_nelson

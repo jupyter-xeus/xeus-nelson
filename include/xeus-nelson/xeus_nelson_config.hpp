@@ -25,10 +25,14 @@
                                   XEUS_NELSON_CONCATENATE(.,XEUS_NELSON_VERSION_PATCH)))))
 
 #ifdef _WIN32
-    #ifdef XEUS_NELSON_EXPORTS
-        #define XEUS_NELSON_API __declspec(dllexport)
+    #ifdef XEUS_NELSON_STATIC_LIB
+        #define XEUS_NELSON_API
     #else
-        #define XEUS_NELSON_API __declspec(dllimport)
+        #ifdef XEUS_NELSON_EXPORTS
+            #define XEUS_NELSON_API __declspec(dllexport)
+        #else
+            #define XEUS_NELSON_API __declspec(dllimport)
+        #endif
     #endif
 #else
     #define XEUS_NELSON_API

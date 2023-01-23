@@ -48,14 +48,16 @@ option(XEUS_NELSON_BUILD_SHARED "Split xnelson build into executable and library
 option(XEUS_NELSON_BUILD_EXECUTABLE "Build the xnelson executable" ON)
 
 option(XEUS_NELSON_USE_SHARED_XEUS "Link xnelson  with the xeus shared library (instead of the static library)" ON)
-option(XEUS_NELSON_USE_SHARED_XEUS_NELSON "Link xnelson  with the xeus shared library (instead of the static library)" ON)
+option(XEUS_NELSON_USE_SHARED_XEUS_NELSON "Link xnelson  with the xeus-nelson shared library (instead of the static library)" ON)
 option(XEUS_NELSON_EMSCRIPTEN_WASM_BUILD "Build for wasm with emscripten" OFF)
 
 if (XEUS_NELSON_EMSCRIPTEN_WASM_BUILD)
-    message("Build with emscripten")
+    message(STATUS "Building with emscripten")
     set(XEUS_NELSON_BUILD_STATIC ON)
     set(XEUS_NELSON_BUILD_SHARED OFF)
     set(XEUS_NELSON_BUILD_EXECUTABLE OFF)
+    set(XEUS_NELSON_USE_SHARED_XEUS OFF)
+    set(XEUS_NELSON_USE_SHARED_XEUS_NELSON OFF)
 endif ()
 
 # Dependencies
@@ -166,6 +168,7 @@ macro(xeus_nelson_set_kernel_options target_name)
             target_link_libraries(${target_name} PRIVATE ${CMAKE_DL_LIBS} util)
         endif()
     else ()
+        target_compile_definitions(${target_name} PUBLIC "XEUS_NELSON_STATIC_LIB")
         target_link_libraries(${target_name} PRIVATE xeus-nelson-static)
     endif()
 

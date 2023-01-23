@@ -44,11 +44,19 @@ configure_file (
 # =============
 
 option(XEUS_NELSON_BUILD_STATIC "Build xeus-nelson static library" ON)
-OPTION(XEUS_NELSON_BUILD_SHARED "Split xnelson build into executable and library" ON)
-OPTION(XEUS_NELSON_BUILD_EXECUTABLE "Build the xnelson executable" ON)
+option(XEUS_NELSON_BUILD_SHARED "Split xnelson build into executable and library" ON)
+option(XEUS_NELSON_BUILD_EXECUTABLE "Build the xnelson executable" ON)
 
-OPTION(XEUS_NELSON_USE_SHARED_XEUS "Link xnelson  with the xeus shared library (instead of the static library)" ON)
-OPTION(XEUS_NELSON_USE_SHARED_XEUS_NELSON "Link xnelson  with the xeus shared library (instead of the static library)" ON)
+option(XEUS_NELSON_USE_SHARED_XEUS "Link xnelson  with the xeus shared library (instead of the static library)" ON)
+option(XEUS_NELSON_USE_SHARED_XEUS_NELSON "Link xnelson  with the xeus shared library (instead of the static library)" ON)
+option(XEUS_NELSON_EMSCRIPTEN_WASM_BUILD "Build for wasm with emscripten" OFF)
+
+if (XEUS_NELSON_EMSCRIPTEN_WASM_BUILD)
+    message("Build with emscripten")
+    set(XEUS_NELSON_BUILD_STATIC ON)
+    set(XEUS_NELSON_BUILD_SHARED OFF)
+    set(XEUS_NELSON_BUILD_EXECUTABLE OFF)
+endif ()
 
 # Dependencies
 # ============
@@ -75,8 +83,9 @@ if (MSVC)
 endif ()
 
 if (CMAKE_CXX_COMPILER_ID MATCHES "Clang" OR CMAKE_CXX_COMPILER_ID MATCHES "GNU" OR CMAKE_CXX_COMPILER_ID MATCHES "Intel")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wunused-parameter -Wextra -Wreorder")
-    
+    if (NOT XEUS_NELSON_EMSCRIPTEN_WASM_BUILD)
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wunused-parameter -Wextra -Wreorder")
+    endif ()
 
     CHECK_CXX_COMPILER_FLAG("-std=c++17" HAS_CPP_17_FLAG)
     if (HAS_CPP_17_FLAG)
@@ -85,8 +94,6 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "Clang" OR CMAKE_CXX_COMPILER_ID MATCHES "GNU"
         message(FATAL_ERROR "Unsupported compiler -- xeus requires C++17 support!")
     endif ()
 endif ()
-
-
 
 # Source files
 # ============
@@ -104,7 +111,6 @@ set(XEUS_NELSON_SRC
 set(XEUS_NELSON_MAIN_SRC
     src/main.cpp
 )
-
 
 # Targets and link - Macros
 # =========================
@@ -163,9 +169,10 @@ macro(xeus_nelson_set_kernel_options target_name)
         target_link_libraries(${target_name} PRIVATE xeus-nelson-static)
     endif()
 
-    find_package(Threads) 
+    if (NOT XEUS_NELSON_EMSCRIPTEN_WASM_BUILD)
+        find_package(Threads) 
         target_link_libraries(${target_name} PRIVATE ${CMAKE_THREAD_LIBS_INIT})
-    
+    endif ()
 endmacro()
 
 # Common macro for shared and static library
@@ -208,10 +215,11 @@ macro(xeus_nelson_create_target target_name linkage output_name)
     elseif (APPLE)
         target_link_libraries(${target_name} PRIVATE "-undefined dynamic_lookup")
     endif ()
-    find_package(Threads) # TODO: add Threads as a dependence of xeus-static?
+
+    if (NOT XEUS_NELSON_EMSCRIPTEN_WASM_BUILD)
+        find_package(Threads) # TODO: add Threads as a dependence of xeus-static?
         target_link_libraries(${target_name} PRIVATE ${CMAKE_THREAD_LIBS_INIT})
-    
-    
+    endif ()
 endmacro()
 
 # xeus-nelson
@@ -239,6 +247,7 @@ endif ()
 
 # xnelson
 # =======
+
 if (XEUS_NELSON_BUILD_EXECUTABLE)
     find_package(xeus-zmq 1.0.2 REQUIRED)
     add_executable(xnelson ${XEUS_NELSON_MAIN_SRC})
@@ -248,6 +257,16 @@ if (XEUS_NELSON_BUILD_EXECUTABLE)
     target_link_libraries(xnelson PRIVATE xeus-zmq)
 endif()
 
+if (XEUS_NELSON_EMSCRIPTEN_WASM_BUILD)
+    include(WasmBuildOptions)
+    find_package(xeus-lite REQUIRED)
+    add_executable(xnelson_wasm src/main_emscripten_kernel.cpp)
+    target_link_libraries(xnelson_wasm PRIVATE xeus-nelson-static xeus-lite)
+    target_compile_features(xnelson_wasm PRIVATE cxx_std_17)
+    xeus_nelson_set_kernel_options(xnelson_wasm)
+    xeus_wasm_compile_options(xnelson_wasm)
+    xeus_wasm_link_options(xnelson_wasm "web,worker")
+endif ()
 
 # Installation
 # ============
@@ -319,4 +338,12 @@ if (XEUS_NELSON_BUILD_SHARED)
             DESTINATION ${XEUS_NELSON_CMAKECONFIG_INSTALL_DIR})
 endif ()
 
+if(XEUS_NELSON_EMSCRIPTEN_WASM_BUILD)
+    install(TARGETS xnelson_wasm
+            ARCHIVE DESTINATION ${CMAKE_INSTALL_BINDIR})
 
+    install(FILES
+            "$<TARGET_FILE_DIR:xnelson_wasm>/xnelson_wasm.js"
+            "$<TARGET_FILE_DIR:xnelson_wasm>/xnelson_wasm.wasm"
+            DESTINATION ${CMAKE_INSTALL_BINDIR})
+endif()

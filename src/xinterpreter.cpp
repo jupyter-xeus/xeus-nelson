@@ -73,18 +73,32 @@ namespace xeus_nelson
             Nelson::EvaluateConsoleCommandToString(m_evaluator, command, output);
             // Trim `output`
             const std::string& trimmed_output = trim(Nelson::wstring_to_utf8(output));
-            if (!silent && !trimmed_output.empty())
+            if (trimmed_output.find("Error:") != std::string::npos)
             {
-                nl::json pub_data;
-                pub_data["text/plain"] = trimmed_output;
-                // Publish the execution result
-                publish_execution_result(execution_counter, std::move(pub_data), nl::json::object());
+                const std::string evalue = "";
+                std::vector<std::string> traceback({trimmed_output});
+                if (!silent)
+                {
+                    publish_execution_error("Interpreter error", evalue, traceback);
+                }
+                // Compose error_reply message
+                return xeus::create_error_reply("Interpreter error", evalue, traceback);
             }
+            else
+            {
+                if (!silent && !trimmed_output.empty())
+                {
+                    nl::json pub_data;
+                    pub_data["text/plain"] = trimmed_output;
+                    // Publish the execution result
+                    publish_execution_result(execution_counter, std::move(pub_data), nl::json::object());
+                }
 
-            // TODO payload to set correctly or deprecated and not used anymore?
-            //const nl::json& payload = nl::json::array();
-            // Compose successful_reply message
-            return xeus::create_successful_reply(nl::json::array(), nl::json::object());
+                // TODO payload to set correctly or deprecated and not used anymore?
+                //const nl::json& payload = nl::json::array();
+                // Compose successful_reply message
+                return xeus::create_successful_reply(nl::json::array(), nl::json::object());
+            }
         }
         catch (Nelson::Exception& e)
         {

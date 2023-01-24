@@ -42,6 +42,12 @@ class TestFake(unittest.TestCase):
 
     #incomplete_code_samples = ["for("]
 
+    #def test_stderr(self):
+        #self.flush_channels()
+        #reply, output_msgs = self.execute_helper(code="a = ")
+        #self.assertEqual(output_msgs[0]["msg_type"], "error")
+        #self.assertEqual(output_msgs[0]["content"]["ename"], "Interpreter error")
+
 #############################################################################
 
     #code_hello_world = "hello, world"
@@ -54,12 +60,6 @@ class TestFake(unittest.TestCase):
         #self.assertEqual(output_msgs[0]["msg_type"], "stream")
         #self.assertEqual(output_msgs[0]["content"]["name"], "stdout")
         #self.assertEqual(output_msgs[0]["content"]["text"], "hello, world")
-
-    #def test_stderr(self):
-        #self.flush_channels()
-        #reply, output_msgs = self.execute_helper(code="error")
-        #self.assertEqual(output_msgs[0]["msg_type"], "stream")
-        #self.assertEqual(output_msgs[0]["content"]["name"], "stderr")
 
 if __name__ == "__main__":
     unittest.main()

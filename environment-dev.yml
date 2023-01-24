@@ -11,7 +11,7 @@ dependencies:
   - nlohmann_json
   - cppzmq
   - xtl
-  - nelson
+  - nelson-core
   # Test dependencies
   - pytest
   - jupyter_kernel_test>=0.4.3

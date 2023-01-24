@@ -4,8 +4,8 @@
 
    The full license is in the file LICENSE, distributed with this software.
 
-.. image:: xeus-python.svg
-   :alt: xeus-python
+.. image:: xeus-nelson.svg
+   :alt: xeus-nelson
 
 
 Introduction
@@ -28,4 +28,4 @@ The full license is in the file LICENSE, distributed with this software.
 
    dev-build-options
 
-.. _xeus: https://github.com/Hind-M/xeus-nelson
+.. _xeus: https://github.com/jupyter-xeus/xeus-nelson

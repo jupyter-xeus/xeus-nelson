@@ -1,9 +1,9 @@
 # ![xeus-nelson](docs/source/xeus-logo.svg)
 
-[![Build Status](https://github.com/Hind-M/xeus-nelson/actions/workflows/main.yml/badge.svg)](https://github.com/Hind-M/xeus-nelson/actions/workflows/main.yml)
+[![Build Status](https://github.com/jupyter-xeus/xeus-nelson/actions/workflows/main.yml/badge.svg)](https://github.com/jupyter-xeus/xeus-nelson/actions/workflows/main.yml)
 
-[![Documentation Status](http://readthedocs.org/projects/xeus-python/badge/?version=latest)](https://xeus-nelsonreadthedocs.io/en/latest/?badge=latest)
-[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/Hind-M/xeus-nelson/main?urlpath=/lab/tree/notebooks/xeus-nelson.ipynb)
+[![Documentation Status](http://readthedocs.org/projects/xeus-nelson/badge/?version=latest)](https://xeus-nelson.readthedocs.io/en/latest/?badge=latest)
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/jupyter-xeus/xeus-nelson/main?urlpath=/lab/tree/notebooks/xeus-nelson.ipynb)
 
 `xeus-nelson` is a Jupyter kernel for nelson based on the native implementation of the
 Jupyter protocol [xeus](https://github.com/jupyter-xeus/xeus).
@@ -39,7 +39,7 @@ mamba install`xeus-nelson` notebook -c conda-forge
 Or you can install it from the sources, you will first need to install dependencies
 
 ```bash
-mamba install cmake cxx-compiler xeus-zmq nlohmann_json cppzmq xtl nelson jupyterlab -c conda-forge
+mamba install cmake cxx-compiler xeus-zmq nlohmann_json cppzmq xtl nelson-core jupyterlab -c conda-forge
 ```
 
 Then you can compile the sources (replace `$CONDA_PREFIX` with a custom installation
@@ -56,7 +56,7 @@ make && make install
 To try out xeus-nelson interactively in your web browser, just click on the binder link:
 (Once Conda Package is Ready)
 
-[![Binder](binder-logo.svg)](https://mybinder.org/v2/gh/Hind-M/xeus-nelson/main?urlpath=/lab/tree/notebooks/xeus-nelson.ipynb) -->
+[![Binder](binder-logo.svg)](https://mybinder.org/v2/gh/jupyter-xeus/xeus-nelson/main?urlpath=/lab/tree/notebooks/xeus-nelson.ipynb) -->
 
 
 
@@ -75,7 +75,7 @@ http://xeus-nelson.readthedocs.io
 - [xtl](https://github.com/xtensor-stack/xtl)
 - [nlohmann_json](https://github.com/nlohmann/json)
 - [cppzmq](https://github.com/zeromq/cppzmq)
-- [nelson](https://github.com/Nelson-numerical-software/nelson-minimalist-core)
+- [nelson-core](https://github.com/Nelson-numerical-software/nelson-minimalist-core)
 
 ## Contributing
 

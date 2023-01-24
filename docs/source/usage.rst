@@ -1,5 +1,4 @@
-.. Copyright (c) 2017, Martin Renou, Johan Mabille, Sylvain Corlay, and
-   Wolf Vollprecht
+.. Copyright (c) 2023, Hind Montassif, Johan Mabille
 
    Distributed under the terms of the BSD 3-Clause License.
 
@@ -9,7 +8,7 @@ Usage
 =====
 
 Launch the Jupyter notebook with `jupyter notebook` or Jupyter lab with `jupyter lab` and launch
-a new Python notebook by selecting the **xpython** kernel.
+a new nelson notebook by selecting the **xnelson** kernel.
 
 Code execution and variable display
 -----------------------------------
@@ -46,19 +45,4 @@ Code completion
 
 .. image:: code_completion.gif
    :alt: code_completion
-
-Rich display
-------------
-
-.. image:: rich_disp.gif
-   :alt: rich_display
-
-And of course widgets
----------------------
-
-.. image:: widgets.gif
-   :alt: widgets
-
-.. image:: binary.gif
-   :alt: widgets_binary
 

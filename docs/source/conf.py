@@ -19,14 +19,14 @@ def setup(app):
     app.add_stylesheet("main_stylesheet.css")
 
 extensions = ['breathe']
-breathe_projects = { 'xeus-python': '../xml' }
+breathe_projects = { 'xeus-nelson': '../xml' }
 templates_path = ['_templates']
 html_static_path = ['_static']
 source_suffix = '.rst'
 master_doc = 'index'
-project = 'xeus-python'
-copyright = '2017, Martin Renou, Johan Mabille, Sylvain Corlay and Wolf Vollprecht'
-author = 'Martin Renou, Johan Mabille, Sylvain Corlay and Wolf Vollprecht'
+project = 'xeus-nelson'
+copyright = '2023, Hind Montassif, Johan Mabille'
+author = 'Hind Montassif, Johan Mabille'
 
 html_logo = 'quantstack-white.svg'
 
@@ -34,4 +34,4 @@ exclude_patterns = []
 highlight_language = 'c++'
 pygments_style = 'sphinx'
 todo_include_todos = False
-htmlhelp_basename = 'xeus-pythondoc'
+htmlhelp_basename = 'xeus-nelsondoc'

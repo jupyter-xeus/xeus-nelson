@@ -189,10 +189,10 @@ namespace xeus_nelson
         const std::string  protocol_version = xeus::get_protocol_version();
         const std::string  implementation = "xeus-nelson";
         const std::string  implementation_version = XEUS_NELSON_VERSION;
-        const std::string  language_name = "nelson";
+        const std::string  language_name = "Octave";
         const std::string  language_version = NELSON_VERSION_STRING;
-        const std::string  language_mimetype = "text/x-nelsonsrc";
-        const std::string  language_file_extension = ".nelson";
+        const std::string  language_mimetype = "text/x-octave";;
+        const std::string  language_file_extension = ".m";;
         const std::string  language_pygments_lexer = "";
         const std::string  language_codemirror_mode = "";
         const std::string  language_nbconvert_exporter = "";

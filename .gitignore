@@ -32,6 +32,13 @@
 *.app
 *.wasm
 
+# Vim tmp files
+*.swp
+
+# Test build artefacts
+test/Testing
+test/__pycache__/
+
 # Jupyter
 .ipynb_checkpoints/
 

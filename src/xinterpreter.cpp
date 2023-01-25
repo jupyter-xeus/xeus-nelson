@@ -203,7 +203,7 @@ namespace xeus_nelson
            >  <  __/ |_| \__ \
           /_/\_\___|\__,_|___/
 
-          xeus-nelson: a Jupyter Kernel based on nelson
+          xeus-nelson: a Jupyter Kernel for Nelson
         */
 
         std::string banner = ""
@@ -212,7 +212,7 @@ namespace xeus_nelson
               "   >  <  __/ |_| \\__ \\\n"
               "  /_/\\_\\___|\\__,_|___/\n"
               "\n"
-              "  xeus-nelson: a Jupyter Kernel based on nelson\n"
+              "  xeus-nelson: a Jupyter Kernel for Nelson\n"
               "  Nelson ";
         banner.append(language_version);
 

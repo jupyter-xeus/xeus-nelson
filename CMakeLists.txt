@@ -8,7 +8,6 @@
 
 cmake_minimum_required(VERSION 3.4.3)
 project(xeus-nelson)
-set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake;${CMAKE_MODULE_PATH}")
 
 set(XEUS_NELSON_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
@@ -123,7 +122,7 @@ string(TOUPPER "${CMAKE_BUILD_TYPE}" U_CMAKE_BUILD_TYPE)
 
 set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib; ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}")
 
-macro(xeus_nelson_set_common_options target_name)
+macro(xnelson_set_common_options target_name)
     if (MSVC)
         target_compile_options(${target_name} PUBLIC /wd4251 /wd4141)
         target_compile_options(${target_name} PUBLIC /wd4018 /wd4267 /wd4715 /wd4146 /wd4129)
@@ -161,7 +160,7 @@ macro(xeus_nelson_set_common_options target_name)
 endmacro()
 
 # Common macro kernels (xnelson )
-macro(xeus_nelson_set_kernel_options target_name)
+macro(xnelson_set_kernel_options target_name)
     if (XEUS_NELSON_USE_SHARED_XEUS_NELSON)
         target_link_libraries(${target_name} PRIVATE xeus-nelson)
         if(CMAKE_DL_LIBS)
@@ -179,7 +178,7 @@ macro(xeus_nelson_set_kernel_options target_name)
 endmacro()
 
 # Common macro for shared and static library
-macro(xeus_nelson_create_target target_name linkage output_name)
+macro(xnelson_create_target target_name linkage output_name)
     string(TOUPPER "${linkage}" linkage_upper)
 
     if (NOT ${linkage_upper} MATCHES "^(SHARED|STATIC)$")
@@ -187,7 +186,7 @@ macro(xeus_nelson_create_target target_name linkage output_name)
     endif ()
 
     add_library(${target_name} ${linkage_upper} ${XEUS_NELSON_SRC} ${XEUS_NELSON_HEADERS})
-    xeus_nelson_set_common_options(${target_name})
+    xnelson_set_common_options(${target_name})
 
     set_target_properties(${target_name} PROPERTIES
                           PUBLIC_HEADER "${XEUS_NELSON_HEADERS}"
@@ -211,7 +210,15 @@ macro(xeus_nelson_create_target target_name linkage output_name)
         set(XEUS_NELSON_XEUS_TARGET xeus-static)
     endif ()
 
-    target_link_libraries(${target_name} PUBLIC ${XEUS_NELSON_XEUS_TARGET} xtl nlsCore nlsEngine nlsText_completion)
+    target_link_libraries(
+        ${target_name}
+        PUBLIC 
+        ${XEUS_NELSON_XEUS_TARGET}
+        xtl
+        nlsCore
+        nlsEngine
+        nlsText_completion
+        nlsFunctions_manager_builtin)
 
     if (WIN32 OR CYGWIN)
         #
@@ -232,7 +239,7 @@ set(XEUS_NELSON_TARGETS "")
 
 if (XEUS_NELSON_BUILD_SHARED)
     # Build libraries
-    xeus_nelson_create_target(xeus-nelson SHARED xeus-nelson)
+    xnelson_create_target(xeus-nelson SHARED xeus-nelson)
     list(APPEND XEUS_NELSON_TARGETS xeus-nelson)
 endif ()
 
@@ -240,9 +247,9 @@ if (XEUS_NELSON_BUILD_STATIC)
     # On Windows, a static library should use a different output name
     # to avoid the conflict with the import library of a shared one.
     if (CMAKE_HOST_WIN32)
-        xeus_nelson_create_target(xeus-nelson-static STATIC xeus-nelson-static)
+        xnelson_create_target(xeus-nelson-static STATIC xeus-nelson-static)
     else ()
-        xeus_nelson_create_target(xeus-nelson-static STATIC xeus-nelson)
+        xnelson_create_target(xeus-nelson-static STATIC xeus-nelson)
     endif ()
     list(APPEND XEUS_NELSON_TARGETS xeus-nelson-static)
     
@@ -255,8 +262,8 @@ if (XEUS_NELSON_BUILD_EXECUTABLE)
     find_package(xeus-zmq 1.0.2 REQUIRED)
     add_executable(xnelson ${XEUS_NELSON_MAIN_SRC})
     target_compile_features(xnelson PRIVATE cxx_std_17)
-    xeus_nelson_set_common_options(xnelson)
-    xeus_nelson_set_kernel_options(xnelson)
+    xnelson_set_common_options(xnelson)
+    xnelson_set_kernel_options(xnelson)
     target_link_libraries(xnelson PRIVATE xeus-zmq)
 endif()
 
@@ -266,7 +273,7 @@ if (XEUS_NELSON_EMSCRIPTEN_WASM_BUILD)
     add_executable(xnelson_wasm src/main_emscripten_kernel.cpp)
     target_link_libraries(xnelson_wasm PRIVATE xeus-nelson-static xeus-lite)
     target_compile_features(xnelson_wasm PRIVATE cxx_std_17)
-    xeus_nelson_set_kernel_options(xnelson_wasm)
+    xnelson_set_kernel_options(xnelson_wasm)
     xeus_wasm_compile_options(xnelson_wasm)
     xeus_wasm_link_options(xnelson_wasm "web,worker")
 endif ()

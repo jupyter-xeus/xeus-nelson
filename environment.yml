@@ -2,7 +2,6 @@ name: xeus-nelson
 channels:
   - conda-forge
 dependencies:
-  - xeus-nelson=0.1.0
+  - xeus-nelson=0.3.0
   - notebook
-  - ipywidgets>=7.6
   - jupyterlab=3

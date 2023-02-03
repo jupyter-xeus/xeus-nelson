@@ -1,7 +1,6 @@
 # ![xeus-nelson](docs/source/xeus-logo.svg)
 
 [![Build Status](https://github.com/jupyter-xeus/xeus-nelson/actions/workflows/main.yml/badge.svg)](https://github.com/jupyter-xeus/xeus-nelson/actions/workflows/main.yml)
-
 [![Documentation Status](http://readthedocs.org/projects/xeus-nelson/badge/?version=latest)](https://xeus-nelson.readthedocs.io/en/latest/?badge=latest)
 [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/jupyter-xeus/xeus-nelson/main?urlpath=/lab/tree/notebooks/xeus-nelson.ipynb)
 
@@ -26,13 +25,11 @@ mamba create -n  `xeus-nelson`
 source activate  `xeus-nelson`
 ```
 
-<!-- ### Installing from conda-forge
-
 Then you can install in this environment `xeus-nelson` and its dependencies
 
 ```bash
 mamba install`xeus-nelson` notebook -c conda-forge
-``` -->
+```
 
 ### Installing from source
 
@@ -51,21 +48,16 @@ cmake .. -D CMAKE_PREFIX_PATH=$CONDA_PREFIX -D CMAKE_INSTALL_PREFIX=$CONDA_PREFI
 make && make install
 ```
 
-<!-- ## Trying it online
-
 To try out xeus-nelson interactively in your web browser, just click on the binder link:
 (Once Conda Package is Ready)
 
-[![Binder](binder-logo.svg)](https://mybinder.org/v2/gh/jupyter-xeus/xeus-nelson/main?urlpath=/lab/tree/notebooks/xeus-nelson.ipynb) -->
-
-
+[![Binder](binder-logo.svg)](https://mybinder.org/v2/gh/jupyter-xeus/xeus-nelson/main?urlpath=/lab/tree/notebooks/xeus-nelson.ipynb)
 
 ## Documentation
 
 To get started with using `xeus-nelson`, check out the full documentation
 
 http://xeus-nelson.readthedocs.io
-
 
 ## Dependencies
 
@@ -84,5 +76,5 @@ development environment.
 
 ## License
 
-This software is licensed under the `BSD 3-Clause License`. See the [LICENSE](LICENSE)
+This software is licensed under the GNU Lesser General Public License version 3. See the [LICENSE](LICENSE)
 file for details.

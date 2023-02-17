@@ -30,7 +30,11 @@
 #include "EvaluateCommand.hpp"
 #include "characters_encoding.hpp"
 #include "BuiltInFunctionDefManager.hpp"
-#include "addpathBuiltin.hpp"
+
+#include "display_format_Gateway.hpp"
+#include "functions_manager_Gateway.hpp"
+#include "trigonometric_functions_Gateway.hpp"
+
 #include "Nelson_VERSION.h"
 
 #include "VariableCompleter.hpp"

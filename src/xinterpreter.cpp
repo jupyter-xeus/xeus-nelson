@@ -35,10 +35,9 @@ namespace xeus_nelson
             Nelson::setWarningEvaluator(m_evaluator);
             Nelson::setErrorEvaluator(m_evaluator);
             Nelson::setPrintInterface(m_evaluator->getInterface());
-            Nelson::BuiltInFunctionDefManager::getInstance()->add("addpath",
-                                                                  (Nelson::ptrBuiltin)Nelson::FunctionsGateway::addpathBuiltin,
-                                                                  1, -1, L"", L"functions_manager",
-                                                                  (size_t)Nelson::CPP_BUILTIN_WITH_EVALUATOR, true);
+            FunctionsManagerAddGateway(m_evaluator, L"");
+            DisplayFormatAddGateway(m_evaluator, L"");
+            TrigonometricFunctionsAddGateway(m_evaluator, L"");
         }
     }
 

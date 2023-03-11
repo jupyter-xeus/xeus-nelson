@@ -72,7 +72,7 @@ if (NOT TARGET xeus AND NOT TARGET xeus-static)
     find_package(xeus ${xeus_REQUIRED_VERSION} REQUIRED)
 endif ()
 
-find_package(Nelson)
+find_package(nelson)
 
 # Flags
 # =====

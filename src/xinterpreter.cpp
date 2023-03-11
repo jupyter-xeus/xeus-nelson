@@ -31,14 +31,8 @@ namespace xeus_nelson
         m_evaluator = Nelson::createMainEvaluator(/*_mode =*/ BASIC_TERMINAL, /*lang =*/ L"en_US", /*minimizeWindow =*/ false); // L"en_US" for default lang
         if (m_evaluator != nullptr)
         {
-            // TODO test if this is useless or not
-            Nelson::setWarningEvaluator(m_evaluator);
-            Nelson::setErrorEvaluator(m_evaluator);
             Nelson::setPrintInterface(m_evaluator->getInterface());
-            Nelson::BuiltInFunctionDefManager::getInstance()->add("addpath",
-                                                                  (Nelson::ptrBuiltin)Nelson::FunctionsGateway::addpathBuiltin,
-                                                                  1, -1, L"", L"functions_manager",
-                                                                  (size_t)Nelson::CPP_BUILTIN_WITH_EVALUATOR, true);
+            Nelson::addInternalGateways(m_evaluator);
         }
     }
 

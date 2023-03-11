@@ -24,13 +24,11 @@
 #include "xeus/xinterpreter.hpp"
 
 #include "MainEvaluator.hpp"
-#include "WarningEmitter.h"
-#include "ErrorEmitter.h"
 #include "NelsonPrint.hpp"
 #include "EvaluateCommand.hpp"
 #include "characters_encoding.hpp"
 #include "BuiltInFunctionDefManager.hpp"
-#include "addpathBuiltin.hpp"
+#include "AddInternalGateways.hpp"
 #include "Nelson_VERSION.h"
 
 #include "VariableCompleter.hpp"

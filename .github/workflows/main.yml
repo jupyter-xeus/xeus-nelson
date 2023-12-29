@@ -81,6 +81,7 @@ jobs:
             -GNinja `
             -DCMAKE_BUILD_TYPE=Release `
             -DCMAKE_INSTALL_PREFIX="%CONDA_PREFIX%\Library"
+        working-directory: build
 
       - name: Build
         shell: powershell

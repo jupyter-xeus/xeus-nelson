@@ -31,7 +31,6 @@ jobs:
         uses: mamba-org/setup-micromamba@v1
         with:
           environment-file: environment-dev.yml
-          environment-name: xeus-nelson
 
       - name: Make build directory
         run: mkdir build
@@ -70,22 +69,13 @@ jobs:
         uses: mamba-org/setup-micromamba@v1
         with:
           environment-file: environment-dev.yml
-          environment-name: xeus-nelson
 
       - name: Make build directory
         run: mkdir build
 
-      - name: micromamba shell hook
-        shell: powershell
-        run: |
-          micromamba shell hook -s cmd.exe -p C:\Users\runneradmin\micromamba-root
-
-      - name: cmake configure
+      - name: Configure cmake
         shell: cmd
         run: |
-          call C:\Users\runneradmin\micromamba-root\condabin\micromamba.bat activate xeus-nelson
-          mkdir -p build
-          cd build
           cmake .. ^
             -GNinja ^
             -DCMAKE_BUILD_TYPE=Release ^
@@ -94,16 +84,13 @@ jobs:
       - name: Build
         shell: cmd
         run: |
-          call C:\Users\runneradmin\micromamba-root\condabin\micromamba.bat activate xeus-nelson
           set CL=/MP
           ninja install
         working-directory: build
 
       - name: Test
         shell: cmd
-        run: |
-          call C:\Users\runneradmin\micromamba-root\condabin\micromamba.bat activate xeus-nelson
-          pytest .  --reruns 5
+        run: pytest .  --reruns 5
         working-directory: test
 
   emscripten_wasm:
@@ -125,14 +112,10 @@ jobs:
           environment-name: xeus-nelson-wasm-build
 
       - name: Setup emsdk
-        run: |
-          micromamba activate xeus-nelson-wasm-build
-          emsdk install ${{matrix.emsdk_ver}}
+        run: emsdk install ${{matrix.emsdk_ver}}
 
       - name: Build xeus-nelson
         run: |
-          micromamba activate xeus-nelson-wasm-build
-
           emsdk activate ${{matrix.emsdk_ver}}
           source $CONDA_EMSDK_DIR/emsdk_env.sh
 

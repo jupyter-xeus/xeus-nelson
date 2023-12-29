@@ -114,10 +114,14 @@ jobs:
           environment-name: xeus-nelson-wasm-build
 
       - name: Setup emsdk
-        run: emsdk install ${{matrix.emsdk_ver}}
+        run: |
+          micromamba activate xeus-nelson-wasm-build
+          emsdk install ${{matrix.emsdk_ver}}
 
       - name: Build xeus-nelson
         run: |
+          micromamba activate xeus-nelson-wasm-build
+
           emsdk activate ${{matrix.emsdk_ver}}
           source $CONDA_EMSDK_DIR/emsdk_env.sh
 

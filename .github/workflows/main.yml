@@ -19,7 +19,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-18.04, ubuntu-20.04, macos-11, macos-12]
+        os: [ubuntu-20.04, ubuntu-22.04, macos-11, macos-12]
 
     steps:
       - uses: actions/checkout@v4
@@ -91,7 +91,7 @@ jobs:
 
       - name: Test
         shell: cmd /C call {0}
-        run: pytest .  --reruns 5
+        run: pytest . --reruns 5
         working-directory: test
 
   emscripten_wasm:

@@ -91,7 +91,7 @@ jobs:
         working-directory: build
 
       - name: Test
-        shell: /C call {0}
+        shell: cmd /C call {0}
         run: pytest . --reruns 5
         working-directory: test
 

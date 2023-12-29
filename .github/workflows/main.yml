@@ -35,7 +35,7 @@ jobs:
       - name: Make build directory
         run: mkdir build
 
-      - name: cmake configure
+      - name: Configure cmake
         run: |
           cmake .. \
             -DCMAKE_PREFIX_PATH=$CONDA_PREFIX \
@@ -50,7 +50,7 @@ jobs:
         working-directory: build
 
       - name: Test
-        run: pytest .  --reruns 5
+        run: pytest . --reruns 5
         working-directory: test
 
   win:
@@ -68,29 +68,29 @@ jobs:
       - name: Install micromamba
         uses: mamba-org/setup-micromamba@v1
         with:
-          init-shell: cmd.exe
+          init-shell: powershell
           environment-file: environment-dev.yml
 
       - name: Make build directory
         run: mkdir build
 
       - name: Configure cmake
-        shell: cmd /C call {0}
+        shell: powershell
         run: |
-          cmake .. ^
-            -GNinja ^
-            -DCMAKE_BUILD_TYPE=Release ^
+          cmake .. `
+            -GNinja `
+            -DCMAKE_BUILD_TYPE=Release `
             -DCMAKE_INSTALL_PREFIX="%CONDA_PREFIX%\Library"
 
       - name: Build
-        shell: cmd /C call {0}
+        shell: powershell
         run: |
           set CL=/MP
           ninja install
         working-directory: build
 
       - name: Test
-        shell: cmd /C call {0}
+        shell: powershell
         run: pytest . --reruns 5
         working-directory: test
 

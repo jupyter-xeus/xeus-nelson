@@ -68,13 +68,14 @@ jobs:
       - name: Install micromamba
         uses: mamba-org/setup-micromamba@v1
         with:
+          init-shell: cmd.exe
           environment-file: environment-dev.yml
 
       - name: Make build directory
         run: mkdir build
 
       - name: Configure cmake
-        shell: cmd
+        shell: cmd /C call {0}
         run: |
           cmake .. ^
             -GNinja ^
@@ -82,14 +83,14 @@ jobs:
             -DCMAKE_INSTALL_PREFIX="%CONDA_PREFIX%\Library"
 
       - name: Build
-        shell: cmd
+        shell: cmd /C call {0}
         run: |
           set CL=/MP
           ninja install
         working-directory: build
 
       - name: Test
-        shell: cmd
+        shell: cmd /C call {0}
         run: pytest .  --reruns 5
         working-directory: test
 

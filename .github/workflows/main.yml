@@ -33,26 +33,26 @@ jobs:
           environment-file: environment-dev.yml
           environment-name: xeus-nelson
 
+      - name: Make build directory
+        run: mkdir build
+
       - name: cmake configure
         run: |
-          mkdir -p build
-          cd build
           cmake .. \
             -DCMAKE_PREFIX_PATH=$CONDA_PREFIX \
             -DCMAKE_INSTALL_PREFIX=$CONDA_PREFIX \
             -DCMAKE_INSTALL_LIBDIR=lib \
             -DCMAKE_C_COMPILER=$CC \
             -DCMAKE_CXX_COMPILER=$CXX
+        working-directory: build
 
-      - name: install
-        run: |
-          cd build
-          make -j ${{ steps.cpu-cores.outputs.count }} install
+      - name: Install
+        run: make -j ${{ steps.cpu-cores.outputs.count }} install
+        working-directory: build
 
-      - name: test
-        run: |
-          cd test
-          pytest .  --reruns 5
+      - name: Test
+        run: pytest .  --reruns 5
+        working-directory: test
 
   win:
 
@@ -72,6 +72,9 @@ jobs:
           environment-file: environment-dev.yml
           environment-name: xeus-nelson
 
+      - name: Make build directory
+        run: mkdir build
+
       - name: micromamba shell hook
         shell: powershell
         run: |
@@ -88,20 +91,20 @@ jobs:
             -DCMAKE_BUILD_TYPE=Release ^
             -DCMAKE_INSTALL_PREFIX="%CONDA_PREFIX%\Library"
 
-      - name: build
+      - name: Build
         shell: cmd
         run: |
           call C:\Users\runneradmin\micromamba-root\condabin\micromamba.bat activate xeus-nelson
-          cd build
           set CL=/MP
           ninja install
+        working-directory: build
 
-      - name: test
+      - name: Test
         shell: cmd
         run: |
           call C:\Users\runneradmin\micromamba-root\condabin\micromamba.bat activate xeus-nelson
-          cd test
           pytest .  --reruns 5
+        working-directory: test
 
   emscripten_wasm:
 

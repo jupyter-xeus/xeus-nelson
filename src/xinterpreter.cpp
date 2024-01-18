@@ -36,6 +36,7 @@ namespace xeus_nelson
         }
     }
 
+
     interpreter::~interpreter()
     {
         Nelson::destroyMainEvaluator();

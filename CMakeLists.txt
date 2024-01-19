@@ -251,8 +251,11 @@ if (XEUS_NELSON_BUILD_STATIC)
     else ()
         xnelson_create_target(xeus-nelson-static STATIC xeus-nelson)
     endif ()
+    if (XEUS_NELSON_EMSCRIPTEN_WASM_BUILD)
+        target_compile_options(xeus-nelson-static PRIVATE -fPIC)
+    endif ()
     list(APPEND XEUS_NELSON_TARGETS xeus-nelson-static)
-    
+
 endif ()
 
 # xnelson
@@ -270,15 +273,13 @@ endif()
 if (EMSCRIPTEN)
     include(WasmBuildOptions)
     find_package(xeus-lite REQUIRED)
-    add_executable(xnelson src/main_emscripten_kernel.cpp)
-    target_link_libraries(xnelson PRIVATE 
-        xeus-lite
-        #xeus-nelson-static
-    )
-    target_compile_features(xnelson PRIVATE cxx_std_17)
-    xnelson_set_kernel_options(xnelson)
-    xeus_wasm_compile_options(xnelson)
-    xeus_wasm_link_options(xnelson "web,worker")
+    add_executable(xnelson_wasm src/main_emscripten_kernel.cpp)
+    target_link_libraries(xnelson_wasm PRIVATE xeus-lite)
+    target_compile_features(xnelson_wasm PRIVATE cxx_std_17)
+    target_compile_options(xnelson_wasm PRIVATE -fPIC)
+    xnelson_set_kernel_options(xnelson_wasm)
+    xeus_wasm_compile_options(xnelson_wasm)
+    xeus_wasm_link_options(xnelson_wasm "web,worker")
 endif ()
 
 # Installation

@@ -13,95 +13,87 @@ defaults:
 
 jobs:
   unix:
-    
+
     runs-on: ${{ matrix.os }}
-     
+
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-18.04, ubuntu-20.04, macos-11, macos-12]
+        os: [ubuntu-20.04, ubuntu-22.04, macos-11, macos-12]
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
 
       - name: Get number of CPU cores
         uses: SimenB/github-actions-cpu-cores@v1
-      
-      - name: install mamba
-        uses: mamba-org/provision-with-micromamba@main
+
+      - name: Install micromamba
+        uses: mamba-org/setup-micromamba@v1
         with:
           environment-file: environment-dev.yml
-          environment-name: xeus-nelson
 
-      - name: cmake configure
+      - name: Make build directory
+        run: mkdir build
+
+      - name: Configure cmake
         run: |
-          mkdir -p build
-          cd build
           cmake .. \
             -DCMAKE_PREFIX_PATH=$CONDA_PREFIX \
             -DCMAKE_INSTALL_PREFIX=$CONDA_PREFIX \
             -DCMAKE_INSTALL_LIBDIR=lib \
             -DCMAKE_C_COMPILER=$CC \
             -DCMAKE_CXX_COMPILER=$CXX
+        working-directory: build
 
-      - name: install
-        run: |
-          cd build
-          make -j ${{ steps.cpu-cores.outputs.count }} install
+      - name: Install
+        run: make -j ${{ steps.cpu-cores.outputs.count }} install
+        working-directory: build
 
-      - name: test
-        run: |
-          cd test
-          pytest .  --reruns 5
+      - name: Test
+        run: pytest . --reruns 5
+        working-directory: test
 
   win:
-    
+
     runs-on: ${{ matrix.os }}
-     
+
     strategy:
       fail-fast: false
       matrix:
         os: [windows-2019, windows-2022]
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
 
-      - name: install mamba
-        uses: mamba-org/provision-with-micromamba@main
+      - name: Install micromamba
+        uses: mamba-org/setup-micromamba@v1
         with:
+          init-shell: cmd.exe
           environment-file: environment-dev.yml
-          environment-name: xeus-nelson
 
-      - name: micromamba shell hook
-        shell: powershell
-        run: |
-          micromamba shell hook -s cmd.exe -p C:\Users\runneradmin\micromamba-root
+      - name: Make build directory
+        run: mkdir build
 
-      - name: cmake configure
-        shell: cmd
+      - name: Configure cmake
+        shell: cmd /C call {0}
         run: |
-          call C:\Users\runneradmin\micromamba-root\condabin\micromamba.bat activate xeus-nelson
-          mkdir -p build
-          cd build
           cmake .. ^
             -GNinja ^
             -DCMAKE_BUILD_TYPE=Release ^
-            -DCMAKE_INSTALL_PREFIX="%CONDA_PREFIX%\Library" 
+            -DCMAKE_INSTALL_PREFIX="%CONDA_PREFIX%\Library"
+        working-directory: build
 
-      - name: build
-        shell: cmd
+      - name: Build
+        shell: cmd /C call {0}
         run: |
-          call C:\Users\runneradmin\micromamba-root\condabin\micromamba.bat activate xeus-nelson
-          cd build
           set CL=/MP
           ninja install
+        working-directory: build
 
-      - name: test
-        shell: cmd
-        run: |
-          call C:\Users\runneradmin\micromamba-root\condabin\micromamba.bat activate xeus-nelson
-          cd test
-          pytest .  --reruns 5
+      - name: Test
+        shell: cmd /C call {0}
+        run: pytest . --reruns 5
+        working-directory: test
 
   emscripten_wasm:
 
@@ -111,12 +103,11 @@ jobs:
       fail-fast: false
       matrix:
         emsdk_ver: ["3.1.45"]
-
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
 
-      - name: Install mamba
-        uses: mamba-org/provision-with-micromamba@main
+      - name: Install micromamba
+        uses: mamba-org/setup-micromamba@v1
         with:
           environment-file: environment-wasm-build.yml
           environment-name: xeus-nelson-wasm-build
@@ -124,7 +115,7 @@ jobs:
       - name: Setup emsdk
         run: |
           micromamba activate xeus-nelson-wasm-build
-          emsdk install ${{matrix.emsdk_ver}}     
+          emsdk install ${{matrix.emsdk_ver}}
 
       - name: Build xeus-nelson
         run: |
@@ -150,4 +141,3 @@ jobs:
             ..
 
           make -j5
-  

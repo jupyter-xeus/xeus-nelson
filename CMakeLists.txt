@@ -48,15 +48,15 @@ option(XEUS_NELSON_BUILD_EXECUTABLE "Build the xnelson executable" ON)
 
 option(XEUS_NELSON_USE_SHARED_XEUS "Link xnelson  with the xeus shared library (instead of the static library)" ON)
 option(XEUS_NELSON_USE_SHARED_XEUS_NELSON "Link xnelson  with the xeus-nelson shared library (instead of the static library)" ON)
-option(XEUS_NELSON_EMSCRIPTEN_WASM_BUILD "Build for wasm with emscripten" OFF)
 
-if (XEUS_NELSON_EMSCRIPTEN_WASM_BUILD)
+if (EMSCRIPTEN)
     message(STATUS "Building with emscripten")
     set(XEUS_NELSON_BUILD_STATIC ON)
     set(XEUS_NELSON_BUILD_SHARED OFF)
     set(XEUS_NELSON_BUILD_EXECUTABLE OFF)
     set(XEUS_NELSON_USE_SHARED_XEUS OFF)
     set(XEUS_NELSON_USE_SHARED_XEUS_NELSON OFF)
+    set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 endif ()
 
 # Dependencies
@@ -84,7 +84,7 @@ if (MSVC)
 endif ()
 
 if (CMAKE_CXX_COMPILER_ID MATCHES "Clang" OR CMAKE_CXX_COMPILER_ID MATCHES "GNU" OR CMAKE_CXX_COMPILER_ID MATCHES "Intel")
-    if (NOT XEUS_NELSON_EMSCRIPTEN_WASM_BUILD)
+    if (NOT EMSCRIPTEN)
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wunused-parameter -Wextra -Wreorder")
     endif ()
 
@@ -171,7 +171,7 @@ macro(xnelson_set_kernel_options target_name)
         target_link_libraries(${target_name} PRIVATE xeus-nelson-static)
     endif()
 
-    if (NOT XEUS_NELSON_EMSCRIPTEN_WASM_BUILD)
+    if (NOT EMSCRIPTEN)
         find_package(Threads) 
         target_link_libraries(${target_name} PRIVATE ${CMAKE_THREAD_LIBS_INIT})
     endif ()
@@ -226,7 +226,7 @@ macro(xnelson_create_target target_name linkage output_name)
         target_link_libraries(${target_name} PRIVATE "-undefined dynamic_lookup")
     endif ()
 
-    if (NOT XEUS_NELSON_EMSCRIPTEN_WASM_BUILD)
+    if (NOT EMSCRIPTEN)
         find_package(Threads) # TODO: add Threads as a dependence of xeus-static?
         target_link_libraries(${target_name} PRIVATE ${CMAKE_THREAD_LIBS_INIT})
     endif ()
@@ -270,16 +270,16 @@ if (XEUS_NELSON_BUILD_EXECUTABLE)
     target_link_libraries(xnelson PRIVATE xeus-zmq)
 endif()
 
-if (XEUS_NELSON_EMSCRIPTEN_WASM_BUILD)
+if (EMSCRIPTEN)
     include(WasmBuildOptions)
     find_package(xeus-lite REQUIRED)
-    add_executable(xnelson_wasm src/main_emscripten_kernel.cpp)
-    target_link_libraries(xnelson_wasm PRIVATE xeus-lite)
-    target_compile_features(xnelson_wasm PRIVATE cxx_std_17)
-    target_compile_options(xnelson_wasm PRIVATE -fPIC)
-    xnelson_set_kernel_options(xnelson_wasm)
-    xeus_wasm_compile_options(xnelson_wasm)
-    xeus_wasm_link_options(xnelson_wasm "web,worker")
+    add_executable(xnelson src/main_emscripten_kernel.cpp)
+    target_link_libraries(xnelson PRIVATE xeus-lite)
+    target_compile_features(xnelson PRIVATE cxx_std_17)
+    target_compile_options(xnelson PRIVATE -fPIC)
+    xnelson_set_kernel_options(xnelson)
+    xeus_wasm_compile_options(xnelson)
+    xeus_wasm_link_options(xnelson "web,worker")
 endif ()
 
 # Installation
@@ -306,7 +306,9 @@ endif ()
 if (XEUS_NELSON_BUILD_EXECUTABLE)
     install(TARGETS xnelson
             RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
+endif()
 
+if (XEUS_NELSON_BUILD_EXECUTABLE OR EMSCRIPTEN)
     # Configuration and data directories for jupyter and xeus-nelson
     set(XJUPYTER_DATA_DIR "share/jupyter"    CACHE STRING "Jupyter data directory")
 
@@ -352,12 +354,12 @@ if (XEUS_NELSON_BUILD_SHARED)
             DESTINATION ${XEUS_NELSON_CMAKECONFIG_INSTALL_DIR})
 endif ()
 
-if(XEUS_NELSON_EMSCRIPTEN_WASM_BUILD)
-    install(TARGETS xnelson_wasm
+if(EMSCRIPTEN)
+    install(TARGETS xnelson
             ARCHIVE DESTINATION ${CMAKE_INSTALL_BINDIR})
 
     install(FILES
-            "$<TARGET_FILE_DIR:xnelson_wasm>/xnelson_wasm.js"
-            "$<TARGET_FILE_DIR:xnelson_wasm>/xnelson_wasm.wasm"
+            "$<TARGET_FILE_DIR:xnelson>/xnelson.js"
+            "$<TARGET_FILE_DIR:xnelson>/xnelson.wasm"
             DESTINATION ${CMAKE_INSTALL_BINDIR})
 endif()

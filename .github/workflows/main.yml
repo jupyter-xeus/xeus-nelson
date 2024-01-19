@@ -102,8 +102,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        emsdk_ver: ["3.1.45", "latest"]
-
+        emsdk_ver: ["3.1.45"]
     steps:
       - uses: actions/checkout@v4
 
@@ -126,7 +125,7 @@ jobs:
           source $CONDA_EMSDK_DIR/emsdk_env.sh
 
           micromamba create -f environment-wasm-host.yml --platform=emscripten-wasm32
-
+          
           mkdir build
           pushd build
 

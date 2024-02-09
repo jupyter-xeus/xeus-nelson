@@ -63,7 +63,7 @@ endif ()
 # ============
 
 set(xtl_REQUIRED_VERSION 0.7.0)
-set(xeus_REQUIRED_VERSION 3.0.5)
+set(xeus_REQUIRED_VERSION 3.2.0)
 
 if (NOT TARGET xtl)
     find_package(xtl ${xtl_REQUIRED_VERSION} REQUIRED)
@@ -73,28 +73,6 @@ if (NOT TARGET xeus AND NOT TARGET xeus-static)
 endif ()
 
 find_package(nelson)
-
-# Flags
-# =====
-include(CheckCXXCompilerFlag)
-
-if (MSVC)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4251 /wd4141")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4018 /wd4267 /wd4715 /wd4146 /wd4129")
-endif ()
-
-if (CMAKE_CXX_COMPILER_ID MATCHES "Clang" OR CMAKE_CXX_COMPILER_ID MATCHES "GNU" OR CMAKE_CXX_COMPILER_ID MATCHES "Intel")
-    if (NOT EMSCRIPTEN)
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wunused-parameter -Wextra -Wreorder")
-    endif ()
-
-    CHECK_CXX_COMPILER_FLAG("-std=c++17" HAS_CPP_17_FLAG)
-    if (HAS_CPP_17_FLAG)
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17")
-    else ()
-        message(FATAL_ERROR "Unsupported compiler -- xeus requires C++17 support!")
-    endif ()
-endif ()
 
 # Source files
 # ============
@@ -123,6 +101,7 @@ string(TOUPPER "${CMAKE_BUILD_TYPE}" U_CMAKE_BUILD_TYPE)
 set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib; ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}")
 
 macro(xnelson_set_common_options target_name)
+    target_compile_features(${target_name} PRIVATE cxx_std_17)
     if (MSVC)
         target_compile_options(${target_name} PUBLIC /wd4251 /wd4141)
         target_compile_options(${target_name} PUBLIC /wd4018 /wd4267 /wd4715 /wd4146 /wd4129)
@@ -133,14 +112,6 @@ macro(xnelson_set_common_options target_name)
         CMAKE_CXX_COMPILER_ID MATCHES "Intel")
 
         target_compile_options(${target_name} PUBLIC -Wunused-parameter -Wextra -Wreorder)
-
-        # C++17 flag
-        CHECK_CXX_COMPILER_FLAG("-std=c++17" HAS_CPP_17_FLAG)
-        if (HAS_CPP_17_FLAG)
-            target_compile_features(${target_name} PRIVATE cxx_std_17)
-        else ()
-            message(FATAL_ERROR "Unsupported compiler -- xeus-nelson requires C++17 support!")
-        endif ()
     endif ()
 
     if (APPLE)
@@ -264,7 +235,6 @@ endif ()
 if (XEUS_NELSON_BUILD_EXECUTABLE)
     find_package(xeus-zmq 1.0.2 REQUIRED)
     add_executable(xnelson ${XEUS_NELSON_MAIN_SRC})
-    target_compile_features(xnelson PRIVATE cxx_std_17)
     xnelson_set_common_options(xnelson)
     xnelson_set_kernel_options(xnelson)
     target_link_libraries(xnelson PRIVATE xeus-zmq)

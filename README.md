@@ -4,8 +4,8 @@
 [![Documentation Status](http://readthedocs.org/projects/xeus-nelson/badge/?version=latest)](https://xeus-nelson.readthedocs.io/en/latest/?badge=latest)
 [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/jupyter-xeus/xeus-nelson/main?urlpath=/lab/tree/notebooks/xeus-nelson.ipynb)
 
-`xeus-nelson` is a Jupyter kernel for nelson based on the native implementation of the
-Jupyter protocol [xeus](https://github.com/jupyter-xeus/xeus).
+`xeus-nelson` is a Jupyter kernel for [nelson](https://github.com/nelson-lang/nelson)
+based on the native implementation of the Jupyter protocol [xeus](https://github.com/jupyter-xeus/xeus).
 
 ## Installation
 

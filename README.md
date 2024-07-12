@@ -36,7 +36,7 @@ mamba install`xeus-nelson` notebook -c conda-forge
 Or you can install it from the sources, you will first need to install dependencies
 
 ```bash
-mamba install cmake cxx-compiler xeus-zmq nlohmann_json cppzmq xtl nelson-core jupyterlab -c conda-forge
+mamba install cmake cxx-compiler xeus-zmq nlohmann_json nelson-core jupyterlab -c conda-forge
 ```
 
 Then you can compile the sources (replace `$CONDA_PREFIX` with a custom installation
@@ -64,10 +64,19 @@ http://xeus-nelson.readthedocs.io
 `xeus-nelson` depends on
 
 - [xeus-zmq](https://github.com/jupyter-xeus/xeus-zmq)
-- [xtl](https://github.com/xtensor-stack/xtl)
 - [nlohmann_json](https://github.com/nlohmann/json)
-- [cppzmq](https://github.com/zeromq/cppzmq)
 - [nelson-core](https://github.com/Nelson-numerical-software/nelson-minimalist-core)
+
+| `xeus-nelson` |   `xeus-zmq`   | `nlohmann_json` |  `nelson-core` |
+|---------------|----------------|-----------------|----------------|
+|    main       |  >=3.0,<4.0    |  >=3.11.3       |   >=0.3,<0.4   |
+|    0.5.x      |  >=3.0,<4.0    |  >=3.11.3       |   >=0.3,<0.4   |
+
+Prior vo version 0.2, `xeus-nelson` was also depending on [xtl](https://github.com/xtensor-stack/xtl) & [cppzmq](https://github.com/zeromq/cppzmq):
+
+| `xeus-nelson` |   `xeus-zmq`     |      `xtl`      | `cppzmq` | `nlohmann_json` |  `nelson-core` |
+|---------------|------------------|-----------------|----------|-----------------|----------------|
+|    0.4.x      |  >=1.0.0,<2.0    |  >=0.7.0,<0.8   | ~4.4.1   |  >=3.11.2       |   >=0.3,<0.4   |
 
 ## Contributing
 

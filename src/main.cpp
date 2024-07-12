@@ -6,8 +6,6 @@
 * The full license is in the file LICENSE, distributed with this software. 
 ****************************************************************************/
 
-
-
 #include <cstdlib>
 #include <iostream>
 #include <string>
@@ -23,12 +21,13 @@
 
 #include "xeus/xkernel.hpp"
 #include "xeus/xkernel_configuration.hpp"
-#include "xeus-zmq/xserver_zmq.hpp"
+#include <xeus/xhelper.hpp>
 
+#include "xeus-zmq/xserver_zmq.hpp"
+#include "xeus-zmq/xzmq_context.hpp"
 
 #include "xeus-nelson/xinterpreter.hpp"
 #include "xeus-nelson/xeus_nelson_config.hpp"
-
 
 #ifdef __GNUC__
 void handler(int sig)
@@ -45,42 +44,19 @@ void handler(int sig)
 }
 #endif
 
-bool should_print_version(int argc, char* argv[])
+std::unique_ptr<xeus::xlogger> make_file_logger(xeus::xlogger::level log_level)
 {
-    for (int i = 0; i < argc; ++i)
-    {
-        if (std::string(argv[i]) == "--version")
-        {
-            return true;
-        }
-    }
-    return false;
+  auto logfile = std::getenv("JUPYTER_LOGFILE");
+  if (logfile == nullptr)
+  {
+    return nullptr;
+  }
+  return xeus::make_file_logger(log_level, logfile);
 }
-
-std::string extract_filename(int argc, char* argv[])
-{
-    std::string res = "";
-    for (int i = 0; i < argc; ++i)
-    {
-        if ((std::string(argv[i]) == "-f") && (i + 1 < argc))
-        {
-            res = argv[i + 1];
-            for (int j = i; j < argc - 2; ++j)
-            {
-                argv[j] = argv[j + 2];
-            }
-            argc -= 2;
-            break;
-        }
-    }
-    return res;
-}
-
-
 
 int main(int argc, char* argv[])
 {
-    if (should_print_version(argc, argv))
+    if (xeus::should_print_version(argc, argv))
     {
         std::clog << "xnelson " << XEUS_NELSON_VERSION  << std::endl;
         return 0;
@@ -102,24 +78,29 @@ int main(int argc, char* argv[])
     signal(SIGSEGV, handler);
 #endif
 
-    auto context = xeus::make_context<zmq::context_t>();
+    std::unique_ptr<xeus::xcontext> context = xeus::make_zmq_context();
 
     // Instantiating the xeus xinterpreter
     using interpreter_ptr = std::unique_ptr<xeus_nelson::interpreter>;
     interpreter_ptr interpreter = interpreter_ptr(new xeus_nelson::interpreter());
 
+    auto hist = xeus::make_in_memory_history_manager();
+    auto logger = xeus::make_console_logger(xeus::xlogger::full, make_file_logger(xeus::xlogger::full));
 
-    std::string connection_filename = extract_filename(argc, argv);
+    std::string connection_filename = xeus::extract_filename(argc, argv);
 
     if (!connection_filename.empty())
     {
-
         xeus::xconfiguration config = xeus::load_configuration(connection_filename);
+
+        std::cout << "Instantiating kernel" << std::endl;
         xeus::xkernel kernel(config,
                              xeus::get_user_name(),
                              std::move(context),
                              std::move(interpreter),
-                             xeus::make_xserver_zmq);
+                             xeus::make_xserver_default,
+                             std::move(hist),
+                             std::move(logger));
 
         std::cout <<
             "Starting xnelson kernel...\n\n"
@@ -134,26 +115,11 @@ int main(int argc, char* argv[])
         xeus::xkernel kernel(xeus::get_user_name(),
                              std::move(context),
                              std::move(interpreter),
-                             xeus::make_xserver_zmq);
+                             xeus::make_xserver_default);
 
+        std::cout << "Getting config" << std::endl;
         const auto& config = kernel.get_config();
-        std::cout <<
-            "Starting xnelson kernel...\n\n"
-            "If you want to connect to this kernel from an other client, just copy"
-            " and paste the following content inside of a `kernel.json` file. And then run for example:\n\n"
-            "# jupyter console --existing kernel.json\n\n"
-            "kernel.json\n```\n{\n"
-            "    \"transport\": \"" + config.m_transport + "\",\n"
-            "    \"ip\": \"" + config.m_ip + "\",\n"
-            "    \"control_port\": " + config.m_control_port + ",\n"
-            "    \"shell_port\": " + config.m_shell_port + ",\n"
-            "    \"stdin_port\": " + config.m_stdin_port + ",\n"
-            "    \"iopub_port\": " + config.m_iopub_port + ",\n"
-            "    \"hb_port\": " + config.m_hb_port + ",\n"
-            "    \"signature_scheme\": \"" + config.m_signature_scheme + "\",\n"
-            "    \"key\": \"" + config.m_key + "\"\n"
-            "}\n```"
-            << std::endl;
+        std::cout << xeus::get_start_message(config) << std::endl;
 
         kernel.start();
     }

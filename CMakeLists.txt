@@ -6,7 +6,7 @@
 #The full license is in the file LICENSE, distributed with this software. 
 #############################################################################
 
-cmake_minimum_required(VERSION 3.4.3)
+cmake_minimum_required(VERSION 3.24)
 project(xeus-nelson)
 
 set(XEUS_NELSON_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
@@ -62,12 +62,9 @@ endif ()
 # Dependencies
 # ============
 
-set(xtl_REQUIRED_VERSION 0.7.0)
-set(xeus_REQUIRED_VERSION 3.2.0)
+set(xeus_REQUIRED_VERSION 5.0.0)
+set(xeus_zmq_REQUIRED_VERSION 3.0.0)
 
-if (NOT TARGET xtl)
-    find_package(xtl ${xtl_REQUIRED_VERSION} REQUIRED)
-endif ()
 if (NOT TARGET xeus AND NOT TARGET xeus-static)
     find_package(xeus ${xeus_REQUIRED_VERSION} REQUIRED)
 endif ()
@@ -185,7 +182,6 @@ macro(xnelson_create_target target_name linkage output_name)
         ${target_name}
         PUBLIC 
         ${XEUS_NELSON_XEUS_TARGET}
-        xtl
         nlsCore
         nlsEngine
         nlsText_completion
@@ -233,7 +229,7 @@ endif ()
 # =======
 
 if (XEUS_NELSON_BUILD_EXECUTABLE)
-    find_package(xeus-zmq 1.0.2 REQUIRED)
+    find_package(xeus-zmq 3.0.0 REQUIRED)
     add_executable(xnelson ${XEUS_NELSON_MAIN_SRC})
     xnelson_set_common_options(xnelson)
     xnelson_set_kernel_options(xnelson)

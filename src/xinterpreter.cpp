@@ -41,23 +41,24 @@ namespace xeus_nelson
         Nelson::destroyMainEvaluator();
     }
 
-    nl::json interpreter::execute_request_impl(int execution_counter, // Typically the cell number
-                                               const  std::string & code, // Code to execute
-                                               bool silent,
-                                               bool /*store_history*/,
-                                               nl::json /*user_expressions*/,
-                                               bool /*allow_stdin*/)
+    void interpreter::execute_request_impl(
+        send_reply_callback cb,
+        int execution_count,
+        const std::string& code,
+        xeus::execute_request_config config,
+        nl::json /*user_expressions*/
+    )
     {
         if (m_evaluator == nullptr)
         {
             const std::string evalue = "Nelson interpreter not initialized";
             std::vector<std::string> traceback({"Interpreter error: " + evalue});
-            if(!silent)
+            if(!config.silent)
             {
                 publish_execution_error("Interpreter error", evalue, traceback);
             }
             // Compose error_reply message
-            return xeus::create_error_reply("Interpreter error", evalue, traceback);
+            cb(xeus::create_error_reply("Interpreter error", evalue, traceback));
         }
 
         try
@@ -71,39 +72,39 @@ namespace xeus_nelson
             {
                 const std::string evalue = "";
                 std::vector<std::string> traceback({trimmed_output});
-                if (!silent)
+                if (!config.silent)
                 {
                     publish_execution_error("Interpreter error", evalue, traceback);
                 }
                 // Compose error_reply message
-                return xeus::create_error_reply("Interpreter error", evalue, traceback);
+                cb(xeus::create_error_reply("Interpreter error", evalue, traceback));
             }
             else
             {
-                if (!silent && !trimmed_output.empty())
+                if (!config.silent && !trimmed_output.empty())
                 {
                     nl::json pub_data;
                     pub_data["text/plain"] = trimmed_output;
                     // Publish the execution result
-                    publish_execution_result(execution_counter, std::move(pub_data), nl::json::object());
+                    publish_execution_result(execution_count, std::move(pub_data), nl::json::object());
                 }
 
                 // TODO payload to set correctly or deprecated and not used anymore?
                 //const nl::json& payload = nl::json::array();
                 // Compose successful_reply message
-                return xeus::create_successful_reply(nl::json::array(), nl::json::object());
+                cb(xeus::create_successful_reply(nl::json::array(), nl::json::object()));
             }
         }
         catch (Nelson::Exception& e)
         {
             const auto evalue = Nelson::wstring_to_utf8(e.getMessage());
             std::vector<std::string> traceback({"Interpreter error: " + evalue});
-            if (!silent)
+            if (!config.silent)
             {
                 publish_execution_error("Interpreter error", evalue, traceback);
             }
             // Compose error_reply message
-            return xeus::create_error_reply("Interpreter error", evalue, traceback);
+            cb(xeus::create_error_reply("Interpreter error", evalue, traceback));
         }
     }
 

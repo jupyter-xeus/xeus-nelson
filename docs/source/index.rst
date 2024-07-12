@@ -4,7 +4,7 @@
 
    The full license is in the file LICENSE, distributed with this software.
 
-.. image:: xeus-nelson.svg
+.. image:: xeus-logo.svg
    :alt: xeus-nelson
 
 
